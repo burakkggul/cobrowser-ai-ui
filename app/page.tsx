@@ -24,7 +24,6 @@ import {
   Copy,
   Settings,
   Bell,
-  User,
   Zap
 } from 'lucide-react';
 
@@ -180,10 +179,45 @@ export default function Home() {
     navigator.clipboard.writeText(promptContent);
   };
 
+  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
+  const demoLines = [
+    'Connected to server, starting test...',
+    'Step 1️⃣: 🌐 Navigating to google.com – This step will open the Google homepage.',
+    'Step 2️⃣: 🔍 Typing "Turkish Airlines" into the search box and submitting – This step will search for Turkish Airlines.',
+    'Proceeding to type "Turkish Airlines" and submit the search.',
+    'Step 1️⃣: 🌐 Navigating to google.com – This step opens the Google homepage.',
+    'Step 2️⃣: 🔍 Searching for "Turkish Airlines" – This step enters "Turkish Airlines" into the search bar and submits the search.',
+    'Step 3️⃣: ✅ Checking if Turkish Airlines website is first place – The first organic result (excluding ads) is "Turkish Airlines ®️ | Flying to the Most Countries‎" with the URL https://www.turkishairlines.com/, confirming the Turkish Airlines website is in first place.',
+    'Web Browser Automation is success.'
+  ];
+
+  const runDemo = async () => {
+    setIsRunning(true);
+    setTestStatus('running');
+    setMessages([]);
+    setCurrentMessage('');
+    for (let i = 0; i < demoLines.length; i++) {
+      addMessage((i > 0 ? '\n' : '') + demoLines[i]);
+      await new Promise(res => setTimeout(res, 500));
+    }
+    setTestStatus('success');
+    setIsRunning(false);
+  };
+
   const handleRunTest = async () => {
     if (!prompt.trim() || isRunning) return;
 
     savePromptToHistory(prompt);
+
+    if (isDemoMode) {
+      setIsRunning(true)
+      await runDemo();
+      setIsRunning(false);
+      setTestStatus('success');
+      return;
+    }
+
     setIsRunning(true);
     setTestStatus('running');
     setMessages([]);
@@ -343,6 +377,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      {isDemoMode && (
+          <div className="fixed top-0 left-1/2 z-[100] -translate-x-1/2 mt-2 px-4 py-1 rounded-full bg-yellow-500 text-black font-semibold shadow-lg text-sm border border-yellow-700 animate-pulse">
+            Demo Mode Active
+          </div>
+      )}
       {/* Top Navigation Bar */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
         <div className="flex items-center justify-between px-6 py-3">
@@ -559,7 +598,7 @@ export default function Home() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {messages.map((message, index) => (
+                    {messages.map((message) => (
                       <div key={message.id} className="space-y-1">
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span className="font-mono">
