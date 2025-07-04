@@ -20,18 +20,21 @@ This repository contains the user interface (UI) components and utilities for th
    git clone https://github.com/burakkggul/cobrowser-ai-ui.git
    cd cobrowser-ai-ui
    ```
+   
 2. Install dependencies:
    ```bash
    npm install
    # or
    yarn install
    ```
+   
 3. Run the development server:
    ```bash
    npm run dev
    # or
    yarn dev
    ```
+   
 4. Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ## Project Structure
